@@ -20,7 +20,7 @@ def prompt_prochaine_action():
     # expliquer le paramètre type
     print("[type]: type de coup à jouer:")
     # expliquer les options de types de coups
-    print("    - 'D': Déplacer l'avatar sur le plateau de jeu (attention: déplacer de 1 case à la foi seulement)")
+    print("    - 'D': Déplacer l'avatar sur le plateau de jeu")
     print("    - 'MH: Placer un mur horizontal sur le plateau de jeu")
     print("    - 'MV: Placer un mur vertical sur le plateau de jeu")
     # expliquer le paramètre posx
@@ -56,88 +56,80 @@ Note:   ce tableau de jeu est fait en sorte qu'il puisse être configurable.
 def afficher_damier_ascii(etat):
     # définition des contraintes du tableau de jeu
     # permet de modifier la taille du jeu si désiré
-    '''TODO: ajuster le code pour pouvoir ajuster le spacing entre les lignes'''
-    BOARD_HORIZONTAL_POSITIONS = 9
-    BOARD_VERTICAL_POSITIONS = 9    
-    BOARD_SPACING_HORIZONTAL = ((BOARD_HORIZONTAL_POSITIONS * 4) - 1)
-    # Extraction des variables du dictionnaire
-    # joueurs
-    joueurs = etat["joueurs"]
-    # murs horizontaux et verticaux
-    murs = etat["murs"]
-    murs_horizontaux = murs["horizontaux"]
-    murs_verticaux = murs["verticaux"]
+    board_positions = 9
+    spacing_horizontal = ((board_positions * 4) - 1)
     # tableaux d'équivalences entre les adresses du jeu et notre tableau
-    game_pos_X = range(1, (BOARD_HORIZONTAL_POSITIONS * 4), 4)
-    game_pos_Y = range(((BOARD_VERTICAL_POSITIONS - 1) * 2), -1, -2)
+    game_pos_x = range(1, (board_positions * 4), 4)
+    game_pos_y = range(((board_positions - 1) * 2), -1, -2)
     # Création du tableau de jeu
-    légende = "légende: " # place holder où ajouter tous les joueurs (pour permettre plus de 2 joueurs)
-    top_line = (' ' * 3) + ('-' * BOARD_SPACING_HORIZONTAL) + '\n'
+    # place holder où ajouter tous les joueurs (pour permettre plus de 2 joueurs)
+    légende = "légende: "
     board = [légende]
     # game board
-    '''TODO: optimiser cette boucle'''
-    for i in reversed(range(BOARD_VERTICAL_POSITIONS * 2)):
+    for i in reversed(range(board_positions * 2)):
         if (i % 2) != 0:
-            board += ["{} |".format((i + 1) // 2)] 
-            board += [' ', '.',]
-            board += ([' ', ' ', ' ','.'] * (BOARD_HORIZONTAL_POSITIONS - 1))
+            board += ["{} |".format((i + 1) // 2)]
+            board += [' ', '.']
+            board += ([' ', ' ', ' ', '.'] * (board_positions - 1))
             board += [' ', '|\n']
         else:
-             board += ["  |"] 
-             board += ([' '] * BOARD_SPACING_HORIZONTAL)
-             board += ['|\n']
+            board += ["  |"]
+            board += ([' '] * spacing_horizontal)
+            board += ['|\n']
     # bottom board line
-    board += "--|" + ('-' * BOARD_SPACING_HORIZONTAL) + '\n'
+    board += "--|" + ('-' * spacing_horizontal) + '\n'
     # bottom number line
     board += (' ' * 2) + '| '
-    for i in range(1, BOARD_HORIZONTAL_POSITIONS):
+    for i in range(1, board_positions):
 	    board += str(i) + (' ' * 3)
     board += "9\n"
     # insertion des joueurs dans board
-    for num, joueur in enumerate(joueurs):
+    for num, joueur in enumerate(etat["joueurs"]):
         # ajout du joueur à la légende du tableau
         légende += "{}={} ".format((num + 1), joueur['nom'])
         # obtention de la position en [x, y] du joueur
         position = joueur["pos"]
         # vérification que la position est dans les contraintes
-        if (0 > position[0] > BOARD_HORIZONTAL_POSITIONS) or (0 > position[1] > BOARD_VERTICAL_POSITIONS):
+        if ((0 > position[0] > board_positions) or
+            (0 > position[1] > board_positions)):
             raise IndexError("Adresse du joueur invalide!")
         # calcul du décallage relatif au tableau
-        position_X = game_pos_X[(position[0] - 1)]
-        position_Y = game_pos_Y[(position[1] - 1)]
-        indice = position_X + (position_Y * BOARD_SPACING_HORIZONTAL)
-        decallage = ((((indice + 1) // BOARD_SPACING_HORIZONTAL) * 2) + 2)
+        position_x = game_pos_x[(position[0] - 1)]
+        position_y = game_pos_y[(position[1] - 1)]
+        indice = position_x + (position_y * spacing_horizontal)
+        decallage = ((((indice + 1) // spacing_horizontal) * 2) + 2)
         indice += decallage
         # Insérer le personnage dans le tableau de jeu
         board[indice] = str(num + 1)
     # complétion de la légende du tableau
-    board[0] = légende + '\n' + top_line 
+    board[0] = légende + '\n' + (' ' * 3) + ('-' * spacing_horizontal) + '\n'
     # insertion des murs horizontaux dans board
-    for murH in murs_horizontaux:
+    for murh in etat["murs"]["horizontaux"]:
         # vérification que la position est dans les contraintes
-        if (1 > murH[0] > (BOARD_HORIZONTAL_POSITIONS - 1)) or (2 > murH[1] > BOARD_VERTICAL_POSITIONS):
+        if ((1 > murh[0] > (board_positions - 1)) or
+            (2 > murh[1] > board_positions)):
             raise IndexError("Position du mur horizontal invalide!")
-        position_X = (game_pos_X[(murH[0] - 1)] - 1)
-        position_Y = (game_pos_Y[(murH[1] - 1)] + 1)
-        indice = position_X + (position_Y * BOARD_SPACING_HORIZONTAL)
-        decallage = ((((indice + 1) // BOARD_SPACING_HORIZONTAL) * 2) + 2)
+        position_x = (game_pos_x[(murh[0] - 1)] - 1)
+        position_y = (game_pos_y[(murh[1] - 1)] + 1)
+        indice = position_x + (position_y * spacing_horizontal)
+        decallage = ((((indice + 1) // spacing_horizontal) * 2) + 2)
         indice += decallage
         # itérer pour placer les 5 murs
         for i in range(7):
             board[(indice + i)] = '-'
     # insertion des murs verticaux
-    for murV in murs_verticaux:
+    for murv in etat["murs"]["verticaux"]:
         # vérification que la position est dans les contraintes
-        if (2 > murV[0] > BOARD_HORIZONTAL_POSITIONS) or (1 > murV[1] > BOARD_VERTICAL_POSITIONS):
+        if (2 > murv[0] > board_positions) or (1 > murv[1] > board_positions):
             raise IndexError("Position du mur vertical invalide!")
-        position_X = (game_pos_X[(murV[0] - 1)] - 2)
-        position_Y = game_pos_Y[(murV[1] - 1)]
-        indice = position_X + (position_Y * BOARD_SPACING_HORIZONTAL)
-        decallage = ((((indice + 1) // BOARD_SPACING_HORIZONTAL) * 2) + 2)
+        position_x = (game_pos_x[(murv[0] - 1)] - 2)
+        position_y = game_pos_y[(murv[1] - 1)]
+        indice = position_x + (position_y * spacing_horizontal)
+        decallage = ((((indice + 1) // spacing_horizontal) * 2) + 2)
         indice += decallage
         # itérer pour placer les 3 murs
         for i in range(3):
-            board[(indice - (i * (BOARD_SPACING_HORIZONTAL + 2)))] = '|'
+            board[(indice - (i * (spacing_horizontal + 2)))] = '|'
     # afficher le jeu sous forme d'une chaine de caractères
     print(''.join(board))
 
@@ -158,7 +150,8 @@ def boucler(newcommand):
     # on va cherche le id dans son holder
     with open('id_holder.txt', 'r') as fich:
         id = fich.read()
-    newboard = api.jouer_coup(id, newcommand.lister[0], (newcommand.lister[1], newcommand.lister[2]))
+    newboard = api.jouer_coup(id, newcommand.lister[0],
+            (newcommand.lister[1], newcommand.lister[2]))
     # afficher le tableau de jeu
     afficher_damier_ascii(newboard['état'])
     # demander au joueur de jouer son prochain coup
@@ -203,8 +196,6 @@ Input:
     None
 Return:
     Un objet argparse.ArgumentParser contenant la réponse du joueur
-TODO: améliorer l'interface utilisateur
-essayer les "mutually-exclusive groups" pourrait peut-être permettre de ne pas devoir toujours entrer le IDUL
 '''
 def analyser_commande():
     parser = argparse.ArgumentParser(
@@ -212,13 +203,12 @@ def analyser_commande():
     )
     # indiquer au joueur d'entrer son nom
     parser.add_argument('idul',
-                        #dest = "idul",
-                        default = 'nom_du_joueur',
-                        help = "Nom du joueur")
+                        default='nom_du_joueur',
+                        help="Nom du joueur")
     parser.add_argument('--actions',
-                        dest = 'lister',
-                        type = str,
-                        nargs = 3)
+                        dest='lister',
+                        type=str,
+                        nargs=3)
     # écouter le terminal
     args = parser.parse_args()
     # Si des actions ont étées spécifiées, aller aux actions
@@ -229,12 +219,10 @@ def analyser_commande():
         debuter(args)
     # kill the parsing
     parser.exit()
-    # envoyer le coup au serveur et retourner le nouveau tableau de jeu (requis dans l'ennoncé mais pas utilisé)
-    return(args)
+    # envoyer le coup au serveur et retourner le nouveau tableau
+    # de jeu (requis dans l'ennoncé mais pas utilisé)
+    return args
 
 
-# demander au joueur d'entrer son idul
-# TODO: afficher un mot de bienvenu qui ne s'affichera qu'une seule foi
-#print("Entrer 'python main.py' suivi de votre idul")
 # initialiser un nouveau tableau de jeu
 analyser_commande()
