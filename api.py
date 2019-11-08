@@ -57,3 +57,47 @@ def débuter_partie(idul):
     else:
         print(f"Le GET sur {url_base+'lister'} a produit le code d'erreur {rep.status_code}.")
     return rep
+
+
+'''
+def jouer_coup(id, ctype, pos)
+Description:
+    Une fonction permettant de contacter le serveur afin de jouer le prochain coup
+Input:
+    - id (str):
+        L'identifiant unique de la partie
+    - ctype (str):
+        le type de coup à jouer:
+            - 'D' = Déplacer l'avatar
+            - 'MH' = Placer un mur horizontal
+            - 'MV' = Placer un mur vertical
+    - pos (tuple):
+        Un tuple (x, y) contenant les coordonnées X et Y où le coup doit s'appliquer
+Return:
+    rep (dict):
+        Un dictionnaire contenant le nouvel état de la partie
+Notes:
+    - Si le serveur retourne un message, la fonction soulève une exception RuntimeError suivi de ce message.
+    - Si le serveur retour un gagnant, la fonction soulève une exception StopInteration suivi du nom du gagnant.
+'''
+def jouer_coup(id, ctype, pos):
+    rep = requests.post(url_base+'jouer/', data={'id': id, 'type': ctype, 'pos': pos})
+    if rep.status_code == 200:
+        # la requête s'est déroulée normalement; décoder le JSON
+        rep = rep.json()
+        #print("message retourné par le serveur:", rep) # TODO: REMOVE
+        if 'gagnant' in rep:
+            '''# Afficher le gagnant (pour être cute)
+            print('\n' + '~' * 39)
+            print("LA PARTIE EST TERMINÉE")
+            print("LE GAGNANT EST:", rep["gagnant"])
+            print('~' * 39 + '\n')'''
+            # soulever l'exception
+            raise StopIteration(rep["gagnant"])
+        # tester pour la présence d'un message dans la réponse
+        if "message" in rep:
+            raise RuntimeError(rep["message"])
+        # tester s'il y a un gagnant
+    else:
+        print(f"Le GET sur {url_base+'lister'} a produit le code d'erreur {rep.status_code}.")
+    return rep
