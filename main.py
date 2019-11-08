@@ -209,11 +209,12 @@ def analyser_commande():
     # indiquer au joueur d'entrer son nom
     parser.add_argument('idul',
                         default='nom_du_joueur',
-                        help="Nom du joueur")
+                        help="Le IDUL du joueur")
     parser.add_argument('--actions',
                         dest='lister',
                         type=str,
-                        nargs=3)
+                        nargs=3,
+                        help="--actions: [type] [posx] [posy]")
     # écouter le terminal
     args = parser.parse_args()
     # Si des actions ont étées spécifiées, aller aux actions
