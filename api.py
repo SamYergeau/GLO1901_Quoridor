@@ -53,7 +53,8 @@ def débuter_partie(idul):
                 - 'état' (dict):
                     Un dictionnaire contenant l'état initial de la partie
     Note:
-        - Si le serveur retourne un message, la fonction soulève une exception RuntimeError suivi de ce message.
+        - Si le serveur retourne un message, la fonction soulève
+            une exception RuntimeError suivi de ce message.
     '''
     rep = requests.post(URL_BASE+'débuter/', data={'idul': idul})
     if rep.status_code == 200:
@@ -87,19 +88,16 @@ def jouer_coup(id, ctype, pos):
         rep (dict):
             Un dictionnaire contenant le nouvel état de la partie
     Notes:
-        - Si le serveur retourne un message, la fonction soulève une exception RuntimeError suivi de ce message.
-        - Si le serveur retour un gagnant, la fonction soulève une exception StopInteration suivi du nom du gagnant.
+        - Si le serveur retourne un message, la fonction soulève
+            une exception RuntimeError suivi de ce message.
+        - Si le serveur retour un gagnant, la fonction soulève
+            une exception StopInteration suivi du nom du gagnant.
     '''
     rep = requests.post(URL_BASE+'jouer/', data={'id': id, 'type': ctype, 'pos': pos})
     if rep.status_code == 200:
         # la requête s'est déroulée normalement; décoder le JSON
         rep = rep.json()
         if 'gagnant' in rep:
-            '''# Afficher le gagnant (pour être cute)
-            print('\n' + '~' * 39)
-            print("LA PARTIE EST TERMINÉE")
-            print("LE GAGNANT EST:", rep["gagnant"])
-            print('~' * 39 + '\n')'''
             # soulever l'exception
             raise StopIteration(rep["gagnant"])
         # tester pour la présence d'un message dans la réponse

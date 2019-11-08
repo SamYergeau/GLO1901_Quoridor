@@ -48,15 +48,15 @@ def afficher_damier_ascii(etat):
                 - {"joueurs": list[dict]} informations sur les joueurs:
                     - {"Nom": str}:  Le nom du joueur
                     - {"murs": int}: Le nombre de murs que le joueur peut encore jouer
-                    - {"pos": list}: La position [x, y]* du joueur 
+                    - {"pos": list}: La position [x, y]* du joueur
                 - {"murs": dict}: la position des murs:
                     - {"horizontaux": list}:    Une liste des positions [x, y]* des murs horizontaux
                     - {"verticaux": list}:      Une liste des positions [x, y]* des murs verticaux
                 *la position du joueur est relative à la grille VISUELLE du tableau affiché
-    Return: 
+    Return:
         none
     Note:   ce tableau de jeu est fait en sorte qu'il puisse être configurable.
-            Sa taille et son nombre de joueur peuvent donc être changés sans 
+            Sa taille et son nombre de joueur peuvent donc être changés sans
             impacter la stabilité. Ainsi, des modifications futures seront beaucoup
             plus faciles.
     '''
@@ -87,7 +87,7 @@ def afficher_damier_ascii(etat):
     # bottom number line
     board += (' ' * 2) + '| '
     for i in range(1, board_positions):
-	    board += str(i) + (' ' * 3)
+        board += str(i) + (' ' * 3)
     board += "9\n"
     # insertion des joueurs dans board
     for num, joueur in enumerate(etat["joueurs"]):
@@ -101,7 +101,7 @@ def afficher_damier_ascii(etat):
             raise IndexError("Adresse du joueur invalide!")
         # calcul du décallage relatif au tableau
         indice = (game_pos_x[(position[0] - 1)] +
-                 (game_pos_y[(position[1] - 1)] * spacing_horizontal))
+                  (game_pos_y[(position[1] - 1)] * spacing_horizontal))
         decallage = ((((indice + 1) // spacing_horizontal) * 2) + 2)
         indice += decallage
         # Insérer le personnage dans le tableau de jeu
@@ -115,7 +115,7 @@ def afficher_damier_ascii(etat):
                 (2 > murh[1] > board_positions)):
             raise IndexError("Position du mur horizontal invalide!")
         indice = ((game_pos_x[(murh[0] - 1)] - 1) +
-                    ((game_pos_y[(murh[1] - 1)] + 1) * spacing_horizontal))
+                  ((game_pos_y[(murh[1] - 1)] + 1) * spacing_horizontal))
         decallage = ((((indice + 1) // spacing_horizontal) * 2) + 2)
         indice += decallage
         # itérer pour placer les 5 murs
@@ -127,7 +127,7 @@ def afficher_damier_ascii(etat):
         if (2 > murv[0] > board_positions) or (1 > murv[1] > board_positions):
             raise IndexError("Position du mur vertical invalide!")
         indice = ((game_pos_x[(murv[0] - 1)] - 2) +
-                 (game_pos_y[(murv[1] - 1)] * spacing_horizontal))
+                  (game_pos_y[(murv[1] - 1)] * spacing_horizontal))
         decallage = ((((indice + 1) // spacing_horizontal) * 2) + 2)
         indice += decallage
         # itérer pour placer les 3 murs
@@ -143,7 +143,8 @@ def boucler(newcommand):
 
     Description:
         fonction de logistique principale du code. L'orsqu'une commande contenant des actions
-        est reçue, notifie le serveur, affiche le nouveau tableau de jeu et demande au joueur de jouer son prochain coup
+        est reçue, notifie le serveur, affiche le nouveau tableau de jeu et demande au joueur
+        de jouer son prochain coup
     Input:
         newcommand (argparse.argumentparser.Nameplace):
             un Nameplace contenant les actions du joueur qui sera passé au serveur
@@ -155,7 +156,7 @@ def boucler(newcommand):
     with open('id_holder.txt', 'r') as fich:
         id = fich.read()
     newboard = api.jouer_coup(id, newcommand.lister[0],
-                             (newcommand.lister[1], newcommand.lister[2]))
+                              (newcommand.lister[1], newcommand.lister[2]))
     # afficher le tableau de jeu
     afficher_damier_ascii(newboard['état'])
     # demander au joueur de jouer son prochain coup
