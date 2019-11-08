@@ -1,8 +1,14 @@
+'''
+Summary line.
+main.py
+document principal du jeu quoridor
+'''
 import argparse
 import api
 
 
 '''
+Summary line. 
 def prompt_prochaine_action
 Description:
     demande à l'utilisateur d'exécuter sa prochaine action et lui
@@ -30,6 +36,7 @@ def prompt_prochaine_action():
 
 
 '''
+Summary line. 
 def afficher_damier_ascii(etat)
 Desctiprion:
     Une fonction qui construit une visualisation graphique de la table de jeu
@@ -91,12 +98,11 @@ def afficher_damier_ascii(etat):
         position = joueur["pos"]
         # vérification que la position est dans les contraintes
         if ((0 > position[0] > board_positions) or
-            (0 > position[1] > board_positions)):
+                (0 > position[1] > board_positions)):
             raise IndexError("Adresse du joueur invalide!")
         # calcul du décallage relatif au tableau
-        position_x = game_pos_x[(position[0] - 1)]
-        position_y = game_pos_y[(position[1] - 1)]
-        indice = position_x + (position_y * spacing_horizontal)
+        indice = (game_pos_x[(position[0] - 1)] +
+                    (game_pos_y[(position[1] - 1)] * spacing_horizontal))
         decallage = ((((indice + 1) // spacing_horizontal) * 2) + 2)
         indice += decallage
         # Insérer le personnage dans le tableau de jeu
@@ -107,11 +113,10 @@ def afficher_damier_ascii(etat):
     for murh in etat["murs"]["horizontaux"]:
         # vérification que la position est dans les contraintes
         if ((1 > murh[0] > (board_positions - 1)) or
-            (2 > murh[1] > board_positions)):
+                (2 > murh[1] > board_positions)):
             raise IndexError("Position du mur horizontal invalide!")
-        position_x = (game_pos_x[(murh[0] - 1)] - 1)
-        position_y = (game_pos_y[(murh[1] - 1)] + 1)
-        indice = position_x + (position_y * spacing_horizontal)
+        indice = ((game_pos_x[(murh[0] - 1)] - 1) +
+                    ((game_pos_y[(murh[1] - 1)] + 1) * spacing_horizontal))
         decallage = ((((indice + 1) // spacing_horizontal) * 2) + 2)
         indice += decallage
         # itérer pour placer les 5 murs
@@ -122,9 +127,8 @@ def afficher_damier_ascii(etat):
         # vérification que la position est dans les contraintes
         if (2 > murv[0] > board_positions) or (1 > murv[1] > board_positions):
             raise IndexError("Position du mur vertical invalide!")
-        position_x = (game_pos_x[(murv[0] - 1)] - 2)
-        position_y = game_pos_y[(murv[1] - 1)]
-        indice = position_x + (position_y * spacing_horizontal)
+        indice = ((game_pos_x[(murv[0] - 1)] - 2) +
+                    (game_pos_y[(murv[1] - 1)] * spacing_horizontal))
         decallage = ((((indice + 1) // spacing_horizontal) * 2) + 2)
         indice += decallage
         # itérer pour placer les 3 murs
@@ -135,6 +139,7 @@ def afficher_damier_ascii(etat):
 
 
 '''
+Summary line. 
 def boucler(id)
 Description:
     fonction de logistique principale du code. L'orsqu'une commande contenant des actions
@@ -151,7 +156,7 @@ def boucler(newcommand):
     with open('id_holder.txt', 'r') as fich:
         id = fich.read()
     newboard = api.jouer_coup(id, newcommand.lister[0],
-            (newcommand.lister[1], newcommand.lister[2]))
+                        (newcommand.lister[1], newcommand.lister[2]))
     # afficher le tableau de jeu
     afficher_damier_ascii(newboard['état'])
     # demander au joueur de jouer son prochain coup
@@ -159,6 +164,7 @@ def boucler(newcommand):
 
 
 '''
+Summary line. 
 def debuter
 Description:
     initialise un nouveau tableau de jeu et store le id de la partie
@@ -188,6 +194,7 @@ def debuter(comm):
 
 
 '''
+Summary line. 
 def analyser_commande(commande)
 Description:
     Une fonction qui permet au joueur d'intéragir avec le jeu

@@ -1,9 +1,15 @@
+'''
+Summary line. 
+api.py
+fonction pour communiquer avec le serveur
+'''
 import requests
 
 
 # URL du server python à contacter
 URL_BASE = 'https://python.gel.ulaval.ca/quoridor/api/'
 '''
+Summary line. 
 def lister_parties(idul)
 Desctiption:
     Fonction qui permet de demander au serveur une liste des
@@ -32,6 +38,7 @@ def lister_parties(idul):
 
 
 '''
+Summary line. 
 def débuter_partie(idul)
 Desctiption:
     Une fonction qui permet de contacter le serveur afin de débuter une partie
@@ -62,6 +69,7 @@ def débuter_partie(idul):
 
 
 '''
+Summary line. 
 def jouer_coup(id, ctype, pos)
 Description:
     Une fonction permettant de contacter le serveur afin de jouer le prochain coup
@@ -87,7 +95,6 @@ def jouer_coup(id, ctype, pos):
     if rep.status_code == 200:
         # la requête s'est déroulée normalement; décoder le JSON
         rep = rep.json()
-        #print("message retourné par le serveur:", rep) # TODO: REMOVE
         if 'gagnant' in rep:
             '''# Afficher le gagnant (pour être cute)
             print('\n' + '~' * 39)
