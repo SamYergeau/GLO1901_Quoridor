@@ -6,7 +6,6 @@ import argparse
 import api
 
 
-
 def prompt_prochaine_action():
     '''def prompt_prochaine_action
 
@@ -231,4 +230,5 @@ def analyser_commande():
 
 
 # initialiser un nouveau tableau de jeu
-analyser_commande()
+if __name__ == "__main__":
+    analyser_commande()
