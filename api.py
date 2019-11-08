@@ -107,3 +107,4 @@ def jouer_coup(id, ctype, pos):
     else:
         print(f"Le GET sur {URL_BASE+'lister'} a produit le code d'erreur {rep.status_code}.")
     return rep
+    
