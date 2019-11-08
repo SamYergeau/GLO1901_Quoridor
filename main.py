@@ -1,24 +1,23 @@
-'''
-Summary line.
-main.py
+'''main.py
+
 document principal du jeu quoridor
 '''
 import argparse
 import api
 
 
-'''
-Summary line. 
-def prompt_prochaine_action
-Description:
-    demande à l'utilisateur d'exécuter sa prochaine action et lui
-    explique le format et les options de commandes qui lui sont possible
-Input:
-    None
-Return:
-    None
-'''
+
 def prompt_prochaine_action():
+    '''def prompt_prochaine_action
+
+    Description:
+        demande à l'utilisateur d'exécuter sa prochaine action et lui
+        explique le format et les options de commandes qui lui sont possible
+    Input:
+        None
+    Return:
+        None
+    '''
     # demander au joueur d'entrer sa prochaine action
     print("entrer votre prochain coup:")
     # expliquer l'orthographe de la commande à entrer
@@ -35,32 +34,32 @@ def prompt_prochaine_action():
     print("[posy]: Position en Y où déplacer l'avatar ou placer un mur")
 
 
-'''
-Summary line. 
-def afficher_damier_ascii(etat)
-Desctiprion:
-    Une fonction qui construit une visualisation graphique de la table de jeu
-    en se basant sur les informations données dans le dictionnaire "etat"
-    et l'affiche à la console de commange
-Input:
-    etat(dict)
-        Un dictionnaire contenant l'état du jeu. contient:
-            - {"joueurs": list[dict]} informations sur les joueurs:
-                - {"Nom": str}:  Le nom du joueur
-                - {"murs": int}: Le nombre de murs que le joueur peut encore jouer
-                - {"pos": list}: La position [x, y]* du joueur 
-            - {"murs": dict}: la position des murs:
-                - {"horizontaux": list}:    Une liste des positions [x, y]* des murs horizontaux
-                - {"verticaux": list}:      Une liste des positions [x, y]* des murs verticaux
-            *la position du joueur est relative à la grille VISUELLE du tableau affiché
-Return: 
-    none
-Note:   ce tableau de jeu est fait en sorte qu'il puisse être configurable.
-        Sa taille et son nombre de joueur peuvent donc être changés sans 
-        impacter la stabilité. Ainsi, des modifications futures seront beaucoup
-        plus faciles.
-'''
+
 def afficher_damier_ascii(etat):
+    '''def afficher_damier_ascii(etat)
+
+    Desctiprion:
+        Une fonction qui construit une visualisation graphique de la table de jeu
+        en se basant sur les informations données dans le dictionnaire "etat"
+        et l'affiche à la console de commange
+    Input:
+        etat(dict)
+            Un dictionnaire contenant l'état du jeu. contient:
+                - {"joueurs": list[dict]} informations sur les joueurs:
+                    - {"Nom": str}:  Le nom du joueur
+                    - {"murs": int}: Le nombre de murs que le joueur peut encore jouer
+                    - {"pos": list}: La position [x, y]* du joueur 
+                - {"murs": dict}: la position des murs:
+                    - {"horizontaux": list}:    Une liste des positions [x, y]* des murs horizontaux
+                    - {"verticaux": list}:      Une liste des positions [x, y]* des murs verticaux
+                *la position du joueur est relative à la grille VISUELLE du tableau affiché
+    Return: 
+        none
+    Note:   ce tableau de jeu est fait en sorte qu'il puisse être configurable.
+            Sa taille et son nombre de joueur peuvent donc être changés sans 
+            impacter la stabilité. Ainsi, des modifications futures seront beaucoup
+            plus faciles.
+    '''
     # définition des contraintes du tableau de jeu
     # permet de modifier la taille du jeu si désiré
     board_positions = 9
@@ -102,7 +101,7 @@ def afficher_damier_ascii(etat):
             raise IndexError("Adresse du joueur invalide!")
         # calcul du décallage relatif au tableau
         indice = (game_pos_x[(position[0] - 1)] +
-                    (game_pos_y[(position[1] - 1)] * spacing_horizontal))
+                 (game_pos_y[(position[1] - 1)] * spacing_horizontal))
         decallage = ((((indice + 1) // spacing_horizontal) * 2) + 2)
         indice += decallage
         # Insérer le personnage dans le tableau de jeu
@@ -128,7 +127,7 @@ def afficher_damier_ascii(etat):
         if (2 > murv[0] > board_positions) or (1 > murv[1] > board_positions):
             raise IndexError("Position du mur vertical invalide!")
         indice = ((game_pos_x[(murv[0] - 1)] - 2) +
-                    (game_pos_y[(murv[1] - 1)] * spacing_horizontal))
+                 (game_pos_y[(murv[1] - 1)] * spacing_horizontal))
         decallage = ((((indice + 1) // spacing_horizontal) * 2) + 2)
         indice += decallage
         # itérer pour placer les 3 murs
@@ -138,44 +137,43 @@ def afficher_damier_ascii(etat):
     print(''.join(board))
 
 
-'''
-Summary line. 
-def boucler(id)
-Description:
-    fonction de logistique principale du code. L'orsqu'une commande contenant des actions
-    est reçue, notifie le serveur, affiche le nouveau tableau de jeu et demande au joueur de jouer son prochain coup
-Input:
-    newcommand (argparse.argumentparser.Nameplace):
-        un Nameplace contenant les actions du joueur qui sera passé au serveur
-Return:
-    None
-'''
+
 def boucler(newcommand):
+    '''def boucler(id)
+
+    Description:
+        fonction de logistique principale du code. L'orsqu'une commande contenant des actions
+        est reçue, notifie le serveur, affiche le nouveau tableau de jeu et demande au joueur de jouer son prochain coup
+    Input:
+        newcommand (argparse.argumentparser.Nameplace):
+            un Nameplace contenant les actions du joueur qui sera passé au serveur
+    Return:
+        None
+    '''
     # envoyer la nouvelle commande au serveur
     # on va cherche le id dans son holder
     with open('id_holder.txt', 'r') as fich:
         id = fich.read()
     newboard = api.jouer_coup(id, newcommand.lister[0],
-                        (newcommand.lister[1], newcommand.lister[2]))
+                             (newcommand.lister[1], newcommand.lister[2]))
     # afficher le tableau de jeu
     afficher_damier_ascii(newboard['état'])
     # demander au joueur de jouer son prochain coup
     prompt_prochaine_action()
 
 
-'''
-Summary line. 
-def debuter
-Description:
-    initialise un nouveau tableau de jeu et store le id de la partie
-Input:
-    comm (Nameplace)
-        un objet contenant la valeur du idul entrée par le joueur au terminal
-        associé à la clé 'idul'
-Return:
-    None
-'''
+
 def debuter(comm):
+    '''def debuter
+    Description:
+        initialise un nouveau tableau de jeu et store le id de la partie
+    Input:
+        comm (Nameplace)
+            un objet contenant la valeur du idul entrée par le joueur au terminal
+            associé à la clé 'idul'
+    Return:
+        None
+    '''
     # transmettre le idul au serveur et recevoir l'état initial du jeu
     newboard = api.débuter_partie(comm.idul)
     # petit mot de bienvenu (tout est dans les détails après tout)
@@ -193,18 +191,17 @@ def debuter(comm):
     prompt_prochaine_action()
 
 
-'''
-Summary line. 
-def analyser_commande(commande)
-Description:
-    Une fonction qui permet au joueur d'intéragir avec le jeu
-    en entrant des commandes dans le terminal
-Input:
-    None
-Return:
-    Un objet argparse.ArgumentParser contenant la réponse du joueur
-'''
+
 def analyser_commande():
+    '''def analyser_commande(commande)
+    Description:
+        Une fonction qui permet au joueur d'intéragir avec le jeu
+        en entrant des commandes dans le terminal
+    Input:
+        None
+    Return:
+        Un objet argparse.ArgumentParser contenant la réponse du joueur
+    '''
     parser = argparse.ArgumentParser(
         description="Jeu de quoridor"
     )
