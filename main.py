@@ -140,3 +140,101 @@ def afficher_damier_ascii(etat):
             board[(indice - (i * (BOARD_SPACING_HORIZONTAL + 2)))] = '|'
     # afficher le jeu sous forme d'une chaine de caractères
     print(''.join(board))
+
+
+'''
+def boucler(id)
+Description:
+    fonction de logistique principale du code. L'orsqu'une commande contenant des actions
+    est reçue, notifie le serveur, affiche le nouveau tableau de jeu et demande au joueur de jouer son prochain coup
+Input:
+    newcommand (argparse.argumentparser.Nameplace):
+        un Nameplace contenant les actions du joueur qui sera passé au serveur
+Return:
+    None
+'''
+def boucler(newcommand):
+    # envoyer la nouvelle commande au serveur
+    # on va cherche le id dans son holder
+    with open('id_holder.txt', 'r') as fich:
+        id = fich.read()
+    newboard = api.jouer_coup(id, newcommand.lister[0], (newcommand.lister[1], newcommand.lister[2]))
+    # afficher le tableau de jeu
+    afficher_damier_ascii(newboard['état'])
+    # demander au joueur de jouer son prochain coup
+    prompt_prochaine_action()
+
+
+'''
+def debuter
+Description:
+    initialise un nouveau tableau de jeu et store le id de la partie
+Input:
+    comm (Nameplace)
+        un objet contenant la valeur du idul entrée par le joueur au terminal
+        associé à la clé 'idul'
+Return:
+    None
+'''
+def debuter(comm):
+    # transmettre le idul au serveur et recevoir l'état initial du jeu
+    newboard = api.débuter_partie(comm.idul)
+    # petit mot de bienvenu (tout est dans les détails après tout)
+    print('\n' + '~' * 39)
+    print("BIENVENU DANS QUORIDOR!")
+    print('~' * 39 + '\n')
+    # afficher le jeu initial
+    afficher_damier_ascii(newboard['état'])
+    # créer un fichier où stocker le id de la partie
+    fich = open('id_holder.txt', 'w')
+    fich.write(newboard['id'])
+    # fermer le fichier pour la bonne mesure
+    fich.close()
+    # demander au joueur de jouer son prochain coup
+    prompt_prochaine_action()
+
+
+'''
+def analyser_commande(commande)
+Description:
+    Une fonction qui permet au joueur d'intéragir avec le jeu
+    en entrant des commandes dans le terminal
+Input:
+    None
+Return:
+    Un objet argparse.ArgumentParser contenant la réponse du joueur
+TODO: améliorer l'interface utilisateur
+essayer les "mutually-exclusive groups" pourrait peut-être permettre de ne pas devoir toujours entrer le IDUL
+'''
+def analyser_commande():
+    parser = argparse.ArgumentParser(
+        description="Jeu de quoridor"
+    )
+    # indiquer au joueur d'entrer son nom
+    parser.add_argument('idul',
+                        #dest = "idul",
+                        default = 'nom_du_joueur',
+                        help = "Nom du joueur")
+    parser.add_argument('--actions',
+                        dest = 'lister',
+                        type = str,
+                        nargs = 3)
+    # écouter le terminal
+    args = parser.parse_args()
+    # Si des actions ont étées spécifiées, aller aux actions
+    if args.lister:
+        boucler(args)
+    # si c'est le premier tout et que seul un IDUL a été spécifié, débuter la partie
+    else:
+        debuter(args)
+    # kill the parsing
+    parser.exit()
+    # envoyer le coup au serveur et retourner le nouveau tableau de jeu (requis dans l'ennoncé mais pas utilisé)
+    return(args)
+
+
+# demander au joueur d'entrer son idul
+# TODO: afficher un mot de bienvenu qui ne s'affichera qu'une seule foi
+#print("Entrer 'python main.py' suivi de votre idul")
+# initialiser un nouveau tableau de jeu
+analyser_commande()
