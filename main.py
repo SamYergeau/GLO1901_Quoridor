@@ -162,8 +162,17 @@ def prompt_player():
         une liste contenant les réponses du joueur
     '''
     # demander au joueur de jouer son prochain coup
-    couptype = input("type de coup: D, MH, MV: ").upper()
-    coupposx = input("positionx: ")
+    print("Veuiller jouer votre prochain coup:")
+    # demander de spécifier le type de coup
+    print("veuiller spécifier le type de coup à jouer:")
+    print("    - D :  déplacer votre pion")
+    print("    - MH : Poser un mur horizontal")
+    print("    - MV : Poser un mur vertical")
+    couptype = input("type de coup: ").upper()
+    # demander de spécifier la position en X du coup
+    print("Veuiller indiquer la position en X de votre coup")
+    coupposx = input("position X: ")
+    print("veuiller indiquer la position en Y de votre coup")
     coupposy = input("positiony: ")
     return [couptype, coupposx, coupposy]
 
@@ -212,5 +221,3 @@ if __name__ == "__main__":
                                       (nouveaucoup[1], nouveaucoup[2]))
             # Afficher une nouvelle partie
             afficher_damier_ascii(newboard['état'])
-#dernière ligne pour éviter un "EOF" error
-
