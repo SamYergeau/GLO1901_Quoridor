@@ -134,7 +134,27 @@ def analyser_commande():
     return parser.parse_args()
 
 
-def debuter(etat):
+def listing(idul):
+    '''def listing(idul)
+    Description:
+        une fonction qui affiche les 20 dernières parties
+    Input:
+        idul (str)
+            le idul du joueur
+    Return:
+        une liste contenant les réponses du joueur
+    '''
+    gamelist = api.lister_parties(idul)
+    print("voici la liste de vos 20 dernières parties jouées")
+    # itérer sur chaque parties à afficher
+    for gamenumber, game in enumerate(gamelist['parties']):
+        print("partie NO.", gamenumber)
+        print("game ID:", game['id'])
+        # afficher l'état final du jeu
+        afficher_damier_ascii(game['état'])
+
+
+def debuter(com):
     '''def debuter
     Description:
         accueilles le joueur et affiche le tableau
@@ -142,14 +162,17 @@ def debuter(etat):
         etat (dict)
             Un dictionnaire contenant les informations sur la table de jeu
     Return:
-        None
+        le id du jeu
     '''
+    # transmettre le idul au serveur et recevoir l'état initial du jeu
+    newboard = api.débuter_partie(com.idul)
     # petit mot de bienvenu (tout est dans les détails après tout)
     print('\n' + '~' * 39)
     print("BIENVENU DANS QUORIDOR!")
     print('~' * 39 + '\n')
     # afficher le jeu initial
-    afficher_damier_ascii(etat)
+    afficher_damier_ascii(newboard['état'])
+    return newboard['id']
 
 
 def prompt_player():
@@ -177,47 +200,35 @@ def prompt_player():
     return [couptype, coupposx, coupposy]
 
 
-def listing(idul):
-    '''def listing(idul)
+def boucler():
+    '''def boucler()
     Description:
-        une fonction qui affiche les 20 dernières parties
+        une fonction qui fait boucler la logique de la partie
     Input:
-        idul (str)
-            le idul du joueur
+        None
     Return:
-        une liste contenant les réponses du joueur
+        None
     '''
-    gamelist = api.lister_parties(idul)
-    print("voici la liste de vos 20 dernières parties jouées")
-    # itérer sur chaque parties à afficher
-    for gamenumber, game in enumerate(gamelist['parties']):
-        print("partie NO.", gamenumber)
-        print("game ID:", game['id'])
-        # afficher l'état final du jeu
-        afficher_damier_ascii(game['état'])
+    while True:
+        # demander au joueur de jouer son prochain coup
+        nouveaucoup = prompt_player()
+        # jouer le coup
+        newboard = api.jouer_coup(GAME_ID, nouveaucoup[0],
+                                  (nouveaucoup[1], nouveaucoup[2]))
+        # Afficher une nouvelle partie
+        print("\nVotre coup à été joué avec succès\n")
+        afficher_damier_ascii(newboard['état'])
 
 
 if __name__ == "__main__":
     #  écouter si le joueur veut commencer une partie
-    com = analyser_commande()
-    print(com)
+    COM = analyser_commande()
     # vérifier si l'argument lister a été appelé
-    if 'lister' in com and com.lister:
+    if 'lister' in COM and COM.lister:
         # appeler la fonction lister
-        listing(com.idul)
+        listing(COM.idul)
     else:
-        # transmettre le idul au serveur et recevoir l'état initial du jeu
-        newboard = api.débuter_partie(com.idul)
-        # storer le id
-        GAME_ID += newboard['id']
-        # accueillir le joueur
-        debuter(newboard['état'])
+        # débuter la partie et storer le id de la partie
+        GAME_ID += debuter(COM)
         # boucler sur la logique de la partie
-        while True:
-            # demander au joueur de jouer son prochain coup
-            nouveaucoup = prompt_player()
-            # jouer le coup
-            newboard = api.jouer_coup(GAME_ID, nouveaucoup[0],
-                                      (nouveaucoup[1], nouveaucoup[2]))
-            # Afficher une nouvelle partie
-            afficher_damier_ascii(newboard['état'])
+        boucler()
