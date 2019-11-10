@@ -213,8 +213,21 @@ def boucler():
         # demander au joueur de jouer son prochain coup
         nouveaucoup = prompt_player()
         # jouer le coup
-        newboard = api.jouer_coup(GAME_ID, nouveaucoup[0],
+        try:
+            newboard = api.jouer_coup(GAME_ID, nouveaucoup[0],
                                   (nouveaucoup[1], nouveaucoup[2]))
+        except RuntimeError as r:
+            print("\nERREUR!: ", r, '\n')
+            continue
+        except StopIteration as s:
+            # prévenir le joueur que la partie est terminée
+            print('\n' + '~' * 39)
+            print("LA PARTIE EST TERMINÉE!")
+            print("LE JOUEUR {} À GAGNÉ!".format(s))
+            print('~' * 39 + '\n')
+            # afficher l'état final du jeu
+            #afficher_damier_ascii(rep['état'])
+            return
         # Afficher une nouvelle partie
         print("\nVotre coup à été joué avec succès\n")
         afficher_damier_ascii(newboard['état'])
