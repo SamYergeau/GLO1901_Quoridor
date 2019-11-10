@@ -215,7 +215,7 @@ def boucler():
         # jouer le coup
         try:
             newboard = api.jouer_coup(GAME_ID, nouveaucoup[0],
-                                  (nouveaucoup[1], nouveaucoup[2]))
+                                      (nouveaucoup[1], nouveaucoup[2]))
         except RuntimeError as r:
             print("\nERREUR!: ", r, '\n')
             continue
