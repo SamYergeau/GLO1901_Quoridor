@@ -6,34 +6,8 @@ import argparse
 import api
 
 
-def prompt_prochaine_action():
-    '''def prompt_prochaine_action
-
-    Description:
-        demande à l'utilisateur d'exécuter sa prochaine action et lui
-        explique le format et les options de commandes qui lui sont possible
-    Input:
-        None
-    Return:
-        None
-    '''
-    # demander au joueur d'entrer sa prochaine action
-    print("entrer votre prochain coup:")
-    # expliquer l'orthographe de la commande à entrer
-    print("entrer: python main.py [idul] --action [type] [posx] [posy]")
-    # expliquer le paramètre type
-    print("[type]: type de coup à jouer:")
-    # expliquer les options de types de coups
-    print("    - 'D': Déplacer l'avatar sur le plateau de jeu")
-    print("    - 'MH: Placer un mur horizontal sur le plateau de jeu")
-    print("    - 'MV: Placer un mur vertical sur le plateau de jeu")
-    # expliquer le paramètre posx
-    print("[posx]: Position en X où déplacer l'avatar ou placer un mur")
-    # expliquer le paramètre posy
-    print("[posy]: Position en Y où déplacer l'avatar ou placer un mur")
-
-
-
+# Storer le id
+GAME_ID = ''
 def afficher_damier_ascii(etat):
     '''def afficher_damier_ascii(etat)
 
@@ -71,9 +45,9 @@ def afficher_damier_ascii(etat):
     légende = "légende: "
     board = [légende]
     # game board
-    for i in reversed(range(board_positions * 2)):
-        if (i % 2) != 0:
-            board += ["{} |".format((i + 1) // 2)]
+    for i in reversed(range((board_positions * 2) - 1)):
+        if (i % 2) == 0:
+            board += ["{} |".format(((i + 1) // 2) + 1)]
             board += [' ', '.']
             board += ([' ', ' ', ' ', '.'] * (board_positions - 1))
             board += [' ', '|\n']
@@ -136,62 +110,6 @@ def afficher_damier_ascii(etat):
     print(''.join(board))
 
 
-
-def boucler(newcommand):
-    '''def boucler(id)
-
-    Description:
-        fonction de logistique principale du code. L'orsqu'une commande contenant des actions
-        est reçue, notifie le serveur, affiche le nouveau tableau de jeu et demande au joueur
-        de jouer son prochain coup
-    Input:
-        newcommand (argparse.argumentparser.Nameplace):
-            un Nameplace contenant les actions du joueur qui sera passé au serveur
-    Return:
-        None
-    '''
-    # envoyer la nouvelle commande au serveur
-    # on va cherche le id dans son holder
-    with open('id_holder.txt', 'r') as fich:
-        id = fich.read()
-    newboard = api.jouer_coup(id, newcommand.lister[0],
-                              (newcommand.lister[1], newcommand.lister[2]))
-    # afficher le tableau de jeu
-    afficher_damier_ascii(newboard['état'])
-    # demander au joueur de jouer son prochain coup
-    prompt_prochaine_action()
-
-
-
-def debuter(comm):
-    '''def debuter
-    Description:
-        initialise un nouveau tableau de jeu et store le id de la partie
-    Input:
-        comm (Nameplace)
-            un objet contenant la valeur du idul entrée par le joueur au terminal
-            associé à la clé 'idul'
-    Return:
-        None
-    '''
-    # transmettre le idul au serveur et recevoir l'état initial du jeu
-    newboard = api.débuter_partie(comm.idul)
-    # petit mot de bienvenu (tout est dans les détails après tout)
-    print('\n' + '~' * 39)
-    print("BIENVENU DANS QUORIDOR!")
-    print('~' * 39 + '\n')
-    # afficher le jeu initial
-    afficher_damier_ascii(newboard['état'])
-    # créer un fichier où stocker le id de la partie
-    fich = open('id_holder.txt', 'w')
-    fich.write(newboard['id'])
-    # fermer le fichier pour la bonne mesure
-    fich.close()
-    # demander au joueur de jouer son prochain coup
-    prompt_prochaine_action()
-
-
-
 def analyser_commande():
     '''def analyser_commande(commande)
     Description:
@@ -203,32 +121,96 @@ def analyser_commande():
         Un objet argparse.ArgumentParser contenant la réponse du joueur
     '''
     parser = argparse.ArgumentParser(
-        description="Jeu de quoridor"
+        description="Jeu Quoridor - phase 1"
     )
     # indiquer au joueur d'entrer son nom
     parser.add_argument('idul',
                         default='nom_du_joueur',
-                        help="Le IDUL du joueur")
-    parser.add_argument('--actions',
+                        help="IDUL du joueur.")
+    parser.add_argument('-l', '--lister',
                         dest='lister',
-                        type=str,
-                        nargs=3,
-                        help="--actions: [type] [posx] [posy]")
-    # écouter le terminal
-    args = parser.parse_args()
-    # Si des actions ont étées spécifiées, aller aux actions
-    if args.lister:
-        boucler(args)
-    # si c'est le premier tout et que seul un IDUL a été spécifié, débuter la partie
-    else:
-        debuter(args)
-    # kill the parsing
-    parser.exit()
-    # envoyer le coup au serveur et retourner le nouveau tableau
-    # de jeu (requis dans l'ennoncé mais pas utilisé)
-    return args
+                        action='store_true',
+                        help="Lister les identifiants de vos 20 dernières parties.")
+    return parser.parse_args()
 
 
-# initialiser un nouveau tableau de jeu
+def debuter(etat):
+    '''def debuter
+    Description:
+        accueilles le joueur et affiche le tableau
+    Input:
+        etat (dict)
+            Un dictionnaire contenant les informations sur la table de jeu
+    Return:
+        None
+    '''
+    # petit mot de bienvenu (tout est dans les détails après tout)
+    print('\n' + '~' * 39)
+    print("BIENVENU DANS QUORIDOR!")
+    print('~' * 39 + '\n')
+    # afficher le jeu initial
+    afficher_damier_ascii(etat)
+
+
+def prompt_player():
+    '''def prompt_player()
+    Description:
+        une fonction qui demande au joueur son prochain coup
+    Input:
+        None
+    Return:
+        une liste contenant les réponses du joueur
+    '''
+    # demander au joueur de jouer son prochain coup
+    couptype = input("type de coup: D, MH, MV: ").upper()
+    coupposx = input("positionx: ")
+    coupposy = input("positiony: ")
+    return [couptype, coupposx, coupposy]
+
+
+def listing(idul):
+    '''def listing(idul)
+    Description:
+        une fonction qui affiche les 20 dernières parties
+    Input:
+        idul (str)
+            le idul du joueur
+    Return:
+        une liste contenant les réponses du joueur
+    '''
+    gamelist = api.lister_parties(idul)
+    print("voici la liste de vos 20 dernières parties jouées")
+    # itérer sur chaque parties à afficher
+    for gamenumber, game in enumerate(gamelist['parties']):
+        print("partie NO.", gamenumber)
+        print("game ID:", game['id'])
+        # afficher l'état final du jeu
+        afficher_damier_ascii(game['état'])
+
+
 if __name__ == "__main__":
-    analyser_commande()
+    #  écouter si le joueur veut commencer une partie
+    com = analyser_commande()
+    print(com)
+    # vérifier si l'argument lister a été appelé
+    if 'lister' in com and com.lister:
+        # appeler la fonction lister
+        listing(com.idul)
+    else:
+        # transmettre le idul au serveur et recevoir l'état initial du jeu
+        newboard = api.débuter_partie(com.idul)
+        # storer le id
+        GAME_ID += newboard['id']
+        # accueillir le joueur
+        debuter(newboard['état'])
+        # boucler sur la logique de la partie
+        while True:
+            # demander au joueur de jouer son prochain coup
+            nouveaucoup = prompt_player()
+            # jouer le coup
+            newboard = api.jouer_coup(GAME_ID, nouveaucoup[0],
+                                      (nouveaucoup[1], nouveaucoup[2]))
+            # Afficher une nouvelle partie
+            afficher_damier_ascii(newboard['état'])
+#dernière ligne pour éviter un "EOF" error
+

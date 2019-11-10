@@ -98,6 +98,14 @@ def jouer_coup(id, ctype, pos):
         # la requête s'est déroulée normalement; décoder le JSON
         rep = rep.json()
         if 'gagnant' in rep:
+            import main
+            # prévenir le joueur que la partie est terminée
+            print('\n' + '~' * 39)
+            print("LA PARTIE EST TERMINÉE!")
+            print("LE JOUEUR {} À GAGNÉ!".format(rep["gagnant"]))
+            print('~' * 39 + '\n')
+            # afficher l'état final du jeu
+            main.afficher_damier_ascii(rep['état'])
             # soulever l'exception
             raise StopIteration(rep["gagnant"])
         # tester pour la présence d'un message dans la réponse
@@ -107,4 +115,3 @@ def jouer_coup(id, ctype, pos):
     else:
         print(f"Le GET sur {URL_BASE+'lister'} a produit le code d'erreur {rep.status_code}.")
     return rep
-    
