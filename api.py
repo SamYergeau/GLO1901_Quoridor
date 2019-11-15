@@ -1,6 +1,15 @@
 '''api.py
 
-fonction pour communiquer avec le serveur
+fonction pour communiquer avec le serveur python
+Contient les fonctions:
+    - lister_parties (projet)
+        Communiquer avec le serveur pour obtenir les 20 dernières parties du joueur
+    - débuter_parties (projet)
+        communiquer avec le serveur pour demmarer une nouvelle partie et obtenir
+        l'etat de la nouvelle table de jeu
+    - jouer_coup (projet)
+        communiquer avec le serveur pour enregistrer le nouveau coup et obtenir l'etat
+        de la table de jeu updatée.
 '''
 import requests
 

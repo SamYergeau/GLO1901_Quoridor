@@ -1,6 +1,30 @@
 '''main.py
 
-document principal du jeu quoridor
+document principal du jeu quoridor. contient la logique du programme.
+Effectue les tâches:
+    - recevoir le idul d'un joueur
+    - débuter la partie
+    - afficher la table de jeu
+    - intéragir avec le joueur pour continuer le jeu
+    - intéragir avec api.py pour communiquer avec le serveur
+Contient les fonctions:
+    - afficher_damier_ascii (projet)
+        affiche la table de jeu en fonction des informations obtenues du serveur
+    - analyser_commande (projet)
+        écoute le terminal pour obtenir le idul du joueur et savoir si ce dernier
+        souhaire obtenir la liste de ses 20 dernières parties
+    - listing (useful tools)
+        obtient la liste des 20 dernières parties du joueur et les lui affichent
+    - debuter (structure logique)
+        effectue les opérations pour débuter une nouvelle partie
+    - prompt_player (structure logique)
+        intéragit avec le joueur pour obtenir les informations de son prochain coup
+    - boucler (structure logique)
+        effectue la logique rincipale de la partie:
+        - obtenir le prochain coup
+        - notifier le serveur
+        - afficher le jeu
+        - terminer le jeu
 '''
 import argparse
 import api
