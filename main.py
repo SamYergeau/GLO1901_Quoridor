@@ -71,7 +71,11 @@ def afficher_damier_ascii(etat):
     # game board
     for i in reversed(range((board_positions * 2) - 1)):
         if (i % 2) == 0:
-            board += ["{} |".format(((i + 1) // 2) + 1)]
+            # check if more than 10 positions for better formatting
+            if (((i + 1) // 2) + 1) < 10:
+                board += ["{} |".format(((i + 1) // 2) + 1)]
+            else:
+                board += ["{}|".format(((i + 1) // 2) + 1)]
             board += [' ', '.']
             board += ([' ', ' ', ' ', '.'] * (board_positions - 1))
             board += [' ', '|\n']
@@ -85,7 +89,7 @@ def afficher_damier_ascii(etat):
     board += (' ' * 2) + '| '
     for i in range(1, board_positions):
         board += str(i) + (' ' * 3)
-    board += "9\n"
+    board += "{}\n".format(board_positions)
     # insertion des joueurs dans board
     for num, joueur in enumerate(etat["joueurs"]):
         # ajout du joueur à la légende du tableau
