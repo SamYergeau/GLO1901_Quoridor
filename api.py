@@ -103,8 +103,9 @@ def jouer_coup(id_partie, type_coup, position):
             une exception StopInteration suivi du nom du gagnant.
     '''
     rep = requests.post(URL_BASE+'jouer/',
-                        data={'id': id_partie, 
-                        'type': type_coup, 'pos': position})
+                        data={'id': id_partie,
+                              'type': type_coup,
+                              'pos': position})
     if rep.status_code == 200:
         # la requête s'est déroulée normalement; décoder le JSON
         rep = rep.json()

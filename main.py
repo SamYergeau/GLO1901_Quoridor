@@ -30,6 +30,24 @@ import argparse
 import api
 
 
+def line_namer(i):
+    """
+    line_namer
+    
+    Handy dandy namer for line numbers for function
+    afficher_damier_ascii. quick fix to "too many branches"
+    problem
+    
+    Arguments:
+        id {int}
+            the current line we're at
+    """
+    if (((i + 1) // 2) + 1) < 10:
+        return ["{} |".format(((i + 1) // 2) + 1)]
+    else:
+        return ["{}|".format(((i + 1) // 2) + 1)]
+
+
 # Storer le id
 GAME_ID = ''
 def afficher_damier_ascii(etat):
@@ -72,10 +90,7 @@ def afficher_damier_ascii(etat):
     for i in reversed(range((board_positions * 2) - 1)):
         if (i % 2) == 0:
             # check if more than 10 positions for better formatting
-            if (((i + 1) // 2) + 1) < 10:
-                board += ["{} |".format(((i + 1) // 2) + 1)]
-            else:
-                board += ["{}|".format(((i + 1) // 2) + 1)]
+            board += line_namer(i)
             board += [' ', '.']
             board += ([' ', ' ', ' ', '.'] * (board_positions - 1))
             board += [' ', '|\n']
