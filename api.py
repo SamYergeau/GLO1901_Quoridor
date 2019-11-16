@@ -78,20 +78,20 @@ def débuter_partie(idul):
 
 
 
-def jouer_coup(id, ctype, pos):
+def jouer_coup(id_partie, type_coup, position):
     '''def jouer_coup(id, ctype, pos)
 
     Description:
         Une fonction permettant de contacter le serveur afin de jouer le prochain coup
     Input:
-        - id (str):
+        - id_partie (str):
             L'identifiant unique de la partie
-        - ctype (str):
+        - type_coup (str):
             le type de coup à jouer:
                 - 'D' = Déplacer l'avatar
                 - 'MH' = Placer un mur horizontal
                 - 'MV' = Placer un mur vertical
-        - pos (tuple):
+        - position (tuple):
             Un tuple (x, y) contenant les coordonnées X et Y où le coup doit s'appliquer
     Return:
         rep (dict):
@@ -102,7 +102,10 @@ def jouer_coup(id, ctype, pos):
         - Si le serveur retour un gagnant, la fonction soulève
             une exception StopInteration suivi du nom du gagnant.
     '''
-    rep = requests.post(URL_BASE+'jouer/', data={'id': id, 'type': ctype, 'pos': pos})
+    rep = requests.post(URL_BASE+'jouer/',
+                        data={'id': id_partie,
+                              'type': type_coup,
+                              'pos': position})
     if rep.status_code == 200:
         # la requête s'est déroulée normalement; décoder le JSON
         rep = rep.json()
