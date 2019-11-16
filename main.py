@@ -31,21 +31,20 @@ import api
 
 
 def line_namer(i):
-    """
-    line_namer
-    
+    """line_namer
     Handy dandy namer for line numbers for function
     afficher_damier_ascii. quick fix to "too many branches"
-    problem
-    
+    problem.
     Arguments:
         id {int}
             the current line we're at
     """
+    r = []
     if (((i + 1) // 2) + 1) < 10:
-        return ["{} |".format(((i + 1) // 2) + 1)]
+        r = ["{} |".format(((i + 1) // 2) + 1)]
     else:
-        return ["{}|".format(((i + 1) // 2) + 1)]
+        r = ["{}|".format(((i + 1) // 2) + 1)]
+    return r
 
 
 # Storer le id
