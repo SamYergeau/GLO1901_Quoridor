@@ -271,3 +271,60 @@ class Quoridor:
         # Changer la position du joueur
         self.joueurs[(joueur - 1)]['pos'] = position
 
+
+    def état_partie(self):
+        """
+         état_partie        
+        Produit l'état actuel du jeu sous la forme d'un dictionnaire
+        input: None
+        Return:
+            une copie de l'état actuel du jeu sous la forme d'un dictionnaire
+            {
+                'joueurs': [
+                    {'nom': nom1, 'murs': n1, 'pos': (x1, y1)},
+                    {'nom': nom2, 'murs': n2, 'pos': (x2, y2)},
+                ]
+                'Murs': {
+                    'horizontaux': [...],
+                    'verticaux': [...],
+                }
+            }
+        """
+        return {"joueurs": [self.joueurs],
+                "murs":{
+                        "horizontaux": self.murh,
+                        "verticaux": self.murv
+                       }}
+
+
+    def jouer_coup(self, joueur):
+        """
+        jouer_coup        
+        Pour le joueur spécifié, jouer automatiquement son meilleur
+        coup pour l'état actuel de la partie. Ce coup est soir le déplacement de son jeton,
+        soit le placement d'un mur horizontal ou vertical.
+        Arguments:
+            joueur {int} -- un entier spécifiant le numéro du joueur (1 ou 2)
+        NOTE: version temporaire et stupide! à optimiser!
+        """
+        # Vérifier que le joueur est valide
+        if joueur != 1 and joueur != 2:
+            raise QuoridorError("joueur invalide!")
+        # créer un graphe des mouvements possible à jouer
+        graphe = construire_graphe(
+            [joueur['pos'] for joueur in self.joueurs],
+            self.murh,
+            self.murv
+        )
+        # vérifier si la partie est déjà terminée
+        # TODO: compléter
+        coup_a_jouer = nx.shortest_path(graphe, self.joueurs[(joueur - 1)]['pos'], 'B1')[0]
+        # jouer le coup
+        # TODO: compléter
+
+
+    def partie_terminée(self):
+        """
+         partie_terminée        
+        [extended_summary]
+        """   
