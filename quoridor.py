@@ -327,4 +327,41 @@ class Quoridor:
         """
          partie_terminée        
         [extended_summary]
-        """   
+        """
+        # definir les conditions de victoire
+        condition_de_victoire = [9, 1]
+        # itérer sur chaque joueurs
+        for numero, joueur in enumerate(self.joueurs):
+            # Vérifier si le joueur rempli les conditions de victoires
+            if joueur['pos'][1] == condition_de_victoire[numero]:
+                # Retourner le nom du joueur gagnant
+                return joueur['nom']
+
+
+    def placer_mur(self, joueur: int, position: tuple, orientation: str):
+        """
+        placer_mur        
+        pour le joueur spécifié, placer un mur à la position spécifiée
+        Arguments:
+            joueur {int} -- Le numéro du joueur (1 ou 2)
+            position {tuple} -- le tuple (x, y) de la position du mur
+            orientation {str} -- l'orientation du mur: 'horizontal' ou 'vertical'
+        """
+        # Vérifier que le joueur est valide
+        if joueur != 1 and joueur != 2:
+            raise QuoridorError("joueur invalide!")
+        # Vérifier si le joueur ne peut plus placer de murs
+        if self.joueurs[(joueur - 1)]['murs'] <= 0:
+            raise QuoridorError("le joueur ne peut plus placer de murs!")
+        # créer un graphe des mouvements possible à jouer
+        graphe = construire_graphe(
+            [joueur['pos'] for joueur in self.joueurs],
+            self.murh,
+            self.murv
+        )
+        # Si le mur est horizontal
+        if orientation == 'horizontal':
+            # vérifier si les positions sont dans les limites du jeu
+            if 1 > position[0] >8 or 2 > position[1] > 9:
+                raise QuoridorError("position du mur invalide!")
+            # vérifier si l'emplacement est déjà occupé
