@@ -108,6 +108,25 @@ class Quoridor:
         self.joueurs = []
         self.murh = []
         self.murv = []
+        # vérifier si un dictionnaire de murs est présent
+        if murs:
+            # vérifier si murs est un tuple
+            if not(isinstance(murs, dict)):
+                raise QuoridorError("murs n'est pas un dictionnaire!")
+            # itérer sur chaque mur horizontal
+            for mur in murs['horizontaux']:
+                # Vérifier si la position du mur est valide
+                if 1 < mur[0] > 8 and 2 < mur[1] > 9:
+                    raise QuoridorError("position du mur non-valide!")
+                self.murh += mur
+            # itérer sur chaque mur vertical
+            for mur in murs['verticaux']:
+                if 2 < mur[0] > 9 and 1 < mur[1] > 8:
+                    raise QuoridorError("position du mur non-valide!")
+                self.murv += mur
+        # Vérifier que le total des murs donne 20
+        if (len(self.murh) + len(self.murv) + joueurs[0]['murs'] + joueurs[1]['murs']) != 20:
+            raise QuoridorError("mauvaise quantité totale de murs!")
         # vérifier que joueurs est itérable et de longueur 2
         if len(joueurs) != 2:
             raise QuoridorError("Il n'y a pas exactement 2 joueurs!")
@@ -139,25 +158,116 @@ class Quoridor:
                     raise QuoridorError("position du joueur invalide!")
                 # updater la valeur de joueur
                 self.joueurs[numero] = joueur
-        # vérifier si un dictionnaire de murs est présent
-        if murs:
-            # vérifier si murs est un tuple
-            if not(isinstance(murs, dict)):
-                raise QuoridorError("murs n'est pas un dictionnaire!")
-            # itérer sur chaque mur horizontal
-            for mur in murs['horizontaux']:
-                # Vérifier si la position du mur est valide
-                if 1 < mur[0] > 8 and 2 < mur[1] > 9:
-                    raise QuoridorError("position du mur non-valide!")
-                self.murh += mur
-            # itérer sur chaque mur vertical
-            for mur in murs['verticaux']:
-                if 2 < mur[0] > 9 and 1 < mur[1] > 8:
-                    raise QuoridorError("position du mur non-valide!")
-                self.murv += mur
-        # Vérifier que le total des murs donne 20
-        if (len(self.murh) + len(self.murv) + self.joueurs[0]['murs'] + self.joueurs[1]['murs']) != 20:
-            raise QuoridorError("mauvaise quantité totale de murs!")
-
         
+
+    def __str__(self):
+        """
+        __str__
+        Produit la représentation en art ascii correspondant à l'état actuel de la partie
+        Returns:
+            board (str)
+        """
+        # définition des contraintes du tableau de jeu
+        # permet de modifier la taille du jeu si désiré
+        board_positions = 9
+        spacing_horizontal = ((board_positions * 4) - 1)
+        # tableaux d'équivalences entre les adresses du jeu et notre tableau
+        game_pos_x = range(1, (board_positions * 4), 4)
+        game_pos_y = range(((board_positions - 1) * 2), -1, -2)
+        # Création du tableau de jeu
+        # place holder où ajouter tous les joueurs (pour permettre plus de 2 joueurs)
+        légende = "légende: "
+        board = [légende]
+        # game board
+        for i in reversed(range((board_positions * 2) - 1)):
+            if (i % 2) == 0:
+                # check if more than 10 positions for better formatting
+                if (((i + 1) // 2) + 1) < 10:
+                    board += ["{} |".format(((i + 1) // 2) + 1)]
+                else:
+                    board += ["{}|".format(((i + 1) // 2) + 1)]
+                    board += [' ', '.']
+                    board += ([' ', ' ', ' ', '.'] * (board_positions - 1))
+                    board += [' ', '|\n']
+            else:
+                board += ["  |"]
+                board += ([' '] * spacing_horizontal)
+                board += ['|\n']
+        # bottom board line
+        board += "--|" + ('-' * spacing_horizontal) + '\n'
+        # bottom number line
+        board += (' ' * 2) + '| '
+        for i in range(1, board_positions):
+            board += str(i) + (' ' * 3)
+        board += "{}\n".format(board_positions)
+        # insertion des joueurs dans board
+        for num, joueur in enumerate(self.joueurs):
+            # ajout du joueur à la légende du tableau
+            légende += "{}={} ".format((num + 1), joueur['nom'])
+            # obtention de la position en [x, y] du joueur
+            position = joueur["pos"]
+            # vérification que la position est dans les contraintes
+            if ((0 > position[0] > board_positions) or
+                    (0 > position[1] > board_positions)):
+                raise IndexError("Adresse du joueur invalide!")
+            # calcul du décallage relatif au tableau
+            indice = (game_pos_x[(position[0] - 1)] +
+                    (game_pos_y[(position[1] - 1)] * spacing_horizontal))
+            decallage = ((((indice + 1) // spacing_horizontal) * 2) + 2)
+            indice += decallage
+            # Insérer le personnage dans le tableau de jeu
+            board[indice] = str(num + 1)
+        # complétion de la légende du tableau
+        board[0] = légende + '\n' + (' ' * 3) + ('-' * spacing_horizontal) + '\n'
+        # insertion des murs horizontaux dans board
+        for murh in self.murh:
+            # vérification que la position est dans les contraintes
+            if ((1 > murh[0] > (board_positions - 1)) or
+                    (2 > murh[1] > board_positions)):
+                raise IndexError("Position du mur horizontal invalide!")
+            indice = ((game_pos_x[(murh[0] - 1)] - 1) +
+                    ((game_pos_y[(murh[1] - 1)] + 1) * spacing_horizontal))
+            decallage = ((((indice + 1) // spacing_horizontal) * 2) + 2)
+            indice += decallage
+            # itérer pour placer les 5 murs
+            for i in range(7):
+                board[(indice + i)] = '-'
+        # insertion des murs verticaux
+        for murv in self.murv:
+            # vérification que la position est dans les contraintes
+            if (2 > murv[0] > board_positions) or (1 > murv[1] > board_positions):
+                raise IndexError("Position du mur vertical invalide!")
+            indice = ((game_pos_x[(murv[0] - 1)] - 2) +
+                    (game_pos_y[(murv[1] - 1)] * spacing_horizontal))
+            decallage = ((((indice + 1) // spacing_horizontal) * 2) + 2)
+            indice += decallage
+            # itérer pour placer les 3 murs
+            for i in range(3):
+                board[(indice - (i * (spacing_horizontal + 2)))] = '|'
+        # afficher le jeu sous forme d'une chaine de caractères
+        return ''.join(board)
+
+
+    def déplacer_jeton(self, joueur, position):
+        """
+        déplacer_jeton
+        Pour le joueur spécifié, déplacer son jeton à la position spécifiée
+        """
+        # Vérifier que le joueur est valide
+        if joueur != 1 and joueur != 2:
+            raise QuoridorError("joueur invalide!")
+        # Vérifier que la position du joueur est valide
+        if 1 < position[0] > 9 or 1 < position[1] > 9:
+            raise QuoridorError("position invalide!")
+        # créer un graphe des mouvements possible à jouer
+        graphe = construire_graphe(
+            [joueur['pos'] for joueur in self.joueurs],
+            self.murh,
+            self.murv
+        )
+        # vérifier si le mouvement est valide
+        if not(position in list(graphe.successors(self.joueurs[(joueur - 1)]))):
+            raise QuoridorError("mouvement invalide!")
+        # Changer la position du joueur
+        self.joueurs[(joueur - 1)]['pos'] = position
 
