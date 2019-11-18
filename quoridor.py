@@ -104,3 +104,60 @@ class Quoridor:
                 Une liste de tuples (x, y) représentant la position des différents
                 murs horizontaux dans la partie
         """
+        # définir les attribut de classes que nous allons utiliser
+        self.joueurs = []
+        self.murh = []
+        self.murv = []
+        # vérifier que joueurs est itérable et de longueur 2
+        if len(joueurs) != 2:
+            raise QuoridorError("Il n'y a pas exactement 2 joueurs!")
+        # itérer sur chaque joueur
+        for numero, joueur in enumerate(joueurs):
+            # Vérifier s'il s'agit d'un string
+            # Si le joueur est un string
+            if isinstance(joueur, str):
+                # créer un dictionnaire vide
+                nouveaujoueur = {}
+                # ajouter le nom au dictionnaire
+                nouveaujoueur['nom'] = joueur
+                # ajouter 10 murs à placer au joueur
+                nouveaujoueur['murs'] = 10
+                # placer le joueur au bon endroit sur le jeu
+                if numero == 0:
+                    nouveaujoueur['pos'] = (5, 1)
+                else:
+                    nouveaujoueur['pos'] = (5, 9)
+                # créer le joueur dans l'objet de classe
+                self.joueurs[numero] = nouveaujoueur #TODO: remplacer nouveaujoueur par juste self.player
+            # Si le joueur fourni est un dictionnaire
+            else:
+                # vérifier que les murs sont legit
+                if  0 < joueur['murs'] > 10:
+                    raise QuoridorError("mauvais nombre de murs!")
+                # Vérifier que la position du joueur est valide
+                if 1 < joueur['pos'] > 9:
+                    raise QuoridorError("position du joueur invalide!")
+                # updater la valeur de joueur
+                self.joueurs[numero] = joueur
+        # vérifier si un dictionnaire de murs est présent
+        if murs:
+            # vérifier si murs est un tuple
+            if not(isinstance(murs, dict)):
+                raise QuoridorError("murs n'est pas un dictionnaire!")
+            # itérer sur chaque mur horizontal
+            for mur in murs['horizontaux']:
+                # Vérifier si la position du mur est valide
+                if 1 < mur[0] > 8 and 2 < mur[1] > 9:
+                    raise QuoridorError("position du mur non-valide!")
+                self.murh += mur
+            # itérer sur chaque mur vertical
+            for mur in murs['verticaux']:
+                if 2 < mur[0] > 9 and 1 < mur[1] > 8:
+                    raise QuoridorError("position du mur non-valide!")
+                self.murv += mur
+        # Vérifier que le total des murs donne 20
+        if (len(self.murh) + len(self.murv) + self.joueurs[0]['murs'] + self.joueurs[1]['murs']) != 20:
+            raise QuoridorError("mauvaise quantité totale de murs!")
+
+        
+
